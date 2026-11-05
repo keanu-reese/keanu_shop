@@ -10,9 +10,9 @@ description: A local network engineer workspace with browser SSH, shared dashboa
   user accounts, bookmarks, CLI snippets, notes, device inventory, and manual diagnostic actions.
   No automated scanning, analytics, or telemetry. Runs locally on Umbrel and stores configuration
   in Umbrel app storage.
-developer: NETOPS Lab
+developer: keanureese
 website: https://github.com/keanu-reese/keanu_shop
-submitter: NETOPS Lab
+submitter: keanureese
 repo: https://github.com/keanu-reese/keanu_shop
 support: https://github.com/keanu-reese/keanu_shop/issues
 gallery: []
