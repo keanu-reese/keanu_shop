@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>NETOPS // Command Center • Umbrel · v3</title>
+  <link rel="stylesheet" href="/static/xterm.css">
+  <script src="/static/xterm.js" defer></script>
+  <style>
+    :root{--bg:#080e17;--rail:#0b121e;--panel:#101a28;--panel2:#142131;--line:#253448;--text:#eef4fa;--muted:#8fa0b4;--soft:#596f86;--mint:#61e5b6;--mintbg:rgba(97,229,182,.11);--amber:#f5bc6b;--red:#f17b80;--blue:#86bcfa;--r:14px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse 65% 44% at 77% -10%,#14253b 0%,transparent 67%),var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.5}a{color:inherit;text-decoration:none}::selection{background:#4e9f89;color:white}
+    .shell{min-height:100vh;display:grid;grid-template-columns:246px minmax(0,1fr)}.sidebar{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);background:rgba(10,17,29,.94);display:flex;flex-direction:column;padding:27px 16px 20px}.brand{padding:1px 10px 27px;display:flex;gap:12px;align-items:center}.brand-symbol{height:38px;width:38px;border:1px solid rgba(97,229,182,.45);border-radius:10px;background:rgba(97,229,182,.1);display:grid;place-items:center;color:var(--mint);font-size:21px;font-weight:800}.brand b{display:block;font-size:15px;letter-spacing:.15em}.brand small{display:block;font:10px/1.5 ui-monospace,monospace;color:var(--muted);letter-spacing:.2em}.nav-section{font:11px ui-monospace,monospace;color:var(--soft);letter-spacing:.13em;margin:14px 12px 10px}.nav-item{width:100%;border:0;text-align:left;display:flex;gap:12px;align-items:center;padding:12px 13px;border-radius:9px;background:transparent;color:#aab8c9;margin:3px 0;transition:.15s}.nav-item:hover{background:#182638;color:white}.nav-item.active{color:var(--mint);background:var(--mintbg)}.nav-item .ico{font-size:18px;width:22px;line-height:1;text-align:center}.nav-item .count{margin-left:auto;font:11px ui-monospace,monospace;color:var(--soft)}.sidebar-footer{margin-top:auto;padding:16px 10px 0;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.dot{display:inline-block;height:8px;width:8px;border-radius:50%;background:var(--soft);margin-right:6px;box-shadow:0 0 0 4px rgba(255,255,255,.025)}.dot.up{background:var(--mint)}.dot.down{background:var(--red)}.sidebar-footer p{margin:7px 0}.main{min-width:0;padding:0 35px 60px;max-width:1720px;width:100%;margin:0 auto}.topbar{height:92px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;justify-content:space-between}.breadcrumb{font-size:12px;color:var(--muted);letter-spacing:.02em}.breadcrumb b{color:#e0eaf6;font-weight:600}.topright{display:flex;align-items:center;gap:14px}.clock{font:12px ui-monospace,monospace;color:#bbcbd9;white-space:nowrap}.search{display:flex;align-items:center;gap:9px;padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:#0b1521;color:var(--muted);width:235px}.search input{width:100%;border:0;background:transparent;color:white;outline:0}.search input::placeholder{color:#65778c}.kbd{border:1px solid var(--line);border-radius:4px;font:10px ui-monospace,monospace;padding:2px 5px;color:var(--soft)}.view{display:none}.view.active{display:block;animation:appear .18s ease}@keyframes appear{from{opacity:.7;transform:translateY(3px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:end;justify-content:space-between;gap:15px;padding:33px 0 26px}.eyebrow{color:var(--mint);text-transform:uppercase;letter-spacing:.23em;font:11px ui-monospace,monospace;margin:0 0 7px}.page-head h1{font-size:clamp(27px,3vw,35px);line-height:1.2;letter-spacing:-.04em;margin:0;font-weight:700}.subheading{color:var(--muted);margin:9px 0 0}.page-actions{display:flex;gap:9px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:9px;background:#19283a;color:#ecf4fc;padding:10px 14px;white-space:nowrap;font-weight:600;transition:.14s}.btn:hover{border-color:#52748a;background:#22374b}.btn:focus-visible,.nav-item:focus-visible,.link-card:focus-visible{outline:2px solid var(--mint);outline-offset:2px}.btn.primary{background:var(--mint);color:#072219;border-color:var(--mint)}.btn.primary:hover{background:#9df3d4}.btn.subtle{background:transparent}.btn.tiny{padding:6px 9px;font-size:12px;border-radius:7px}.btn.danger{color:#ffc0c0;border-color:#603b44}.btn.danger:hover{background:#4a202c}.btn.icononly{padding:8px 10px}.grid-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.metric{background:linear-gradient(150deg,#152336,#0e1825);border:1px solid var(--line);padding:18px 20px;border-radius:var(--r);min-height:119px}.metric .label{font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:space-between}.metric .value{font-size:31px;font-weight:700;letter-spacing:-.05em;line-height:1.35;margin-top:9px}.metric .foot{font-size:11px;color:var(--soft);margin-top:2px}.metric .value small{font-size:14px;font-weight:400;color:var(--muted);letter-spacing:0}.accent{color:var(--mint)}.amber{color:var(--amber)}.red{color:var(--red)}.layout-main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:17px;margin-top:17px}.stack{display:flex;flex-direction:column;gap:17px}.panel{background:rgba(16,26,40,.92);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}.panel-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:20px 22px 15px}.panel-head h2{margin:0;font-size:16px;letter-spacing:-.015em}.panel-head p{font-size:12px;color:var(--muted);margin:4px 0 0}.panel-body{padding:0 22px 21px}.panel-footer{padding:13px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px}.link-text{font-weight:600;color:var(--mint);background:none;border:0;padding:0}.link-text:hover{text-decoration:underline}.table-wrap{overflow-x:auto}.asset-table{width:100%;border-collapse:collapse;white-space:nowrap}.asset-table th{padding:12px 16px;background:#0d1724;color:#71879c;font-size:10px;text-align:left;text-transform:uppercase;font-weight:600;letter-spacing:.12em}.asset-table td{padding:12px 16px;border-bottom:1px solid #223044;font-size:12px;color:var(--muted)}.asset-table tr:last-child td{border-bottom:none}.asset-table tbody tr:hover{background:#152336}.asset-name{font-weight:650;color:var(--text);font-size:13px}.asset-host{font:11px ui-monospace,monospace;color:#92a9bb;display:block;margin-top:3px;max-width:240px;overflow:hidden;text-overflow:ellipsis}.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid #35455a;border-radius:99px;padding:3px 8px;font-size:11px;color:#a9bcce;background:#182639}.chip.healthy{background:rgba(97,229,182,.09);color:var(--mint);border-color:rgba(97,229,182,.28)}.chip.unhealthy{background:rgba(241,123,128,.08);color:var(--red);border-color:rgba(241,123,128,.28)}.chip.pending{color:#90a1b4}.row-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px}.row-actions button{padding:6px 9px;border:1px solid #33445a;background:#172638;color:#cee0ee;border-radius:7px;font-size:11px}.row-actions button:hover{border-color:var(--mint);color:var(--mint)}.row-actions button:disabled{opacity:.25}.empty{padding:40px 18px;color:var(--muted);text-align:center;font-size:13px}.quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:0 22px 21px}.link-card{display:flex;align-items:center;gap:12px;padding:13px;background:#132131;border:1px solid #273a4d;border-radius:10px;min-width:0;text-align:left}.link-card:hover{background:#1c3044;border-color:#547b80}.link-symbol{display:grid;place-items:center;border:1px solid #355168;border-radius:9px;width:37px;height:37px;flex:0 0 37px;color:var(--mint);font-weight:700;font-size:17px;background:#102337}.link-card .name{font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.link-card .detail{font:10px ui-monospace,monospace;color:var(--muted);white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.subtle-label{font:10px ui-monospace,monospace;letter-spacing:.11em;color:var(--muted);text-transform:uppercase}.quick-ssh{display:grid;grid-template-columns:minmax(0,1fr) 74px;gap:9px;padding:0 22px 20px}.field,.control{width:100%;background:#0b1522;border:1px solid #314259;border-radius:8px;color:#ebf4fb;padding:11px 12px;outline:none;min-width:0}.field:focus,.control:focus,textarea:focus{border-color:var(--mint)}.field::placeholder,textarea::placeholder{color:#5e7389}.terminal{font:12px/1.8 ui-monospace,Consolas,Monaco,monospace;background:#070f19;border:1px solid #26394b;border-radius:10px;padding:14px 16px;color:#bcd3e7;min-height:88px;white-space:pre-wrap;overflow-wrap:anywhere}.terminal .prompt{color:var(--mint)}.note-pad{resize:vertical;width:100%;min-height:156px;background:#0b1522;color:#dbeaf5;border:1px solid #2b3f55;border-radius:9px;padding:13px;line-height:1.6}.daily-list{display:grid;gap:10px}.task{display:flex;align-items:center;gap:10px;color:#cbd7e4;font-size:13px}.task input{accent-color:var(--mint);width:16px;height:16px}.task.done span{text-decoration:line-through;color:#677e91}.activity{display:grid;gap:0}.event{padding:10px 0;display:flex;gap:11px;align-items:flex-start;border-bottom:1px solid #223044}.event:last-child{border:0}.event-icon{color:var(--mint);font:12px ui-monospace,monospace}.event-main{flex:1;min-width:0;font-size:12px;color:#b5c6d6}.event-time{font:10px ui-monospace,monospace;color:var(--soft);white-space:nowrap}.status-line{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;flex-wrap:wrap}.banner{background:rgba(97,229,182,.07);border:1px solid rgba(97,229,182,.19);border-radius:10px;padding:12px 15px;color:#a7d8c8;font-size:12px;margin-bottom:18px}.banner strong{color:#dbfff2}.data-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:17px}.data-toolbar .grow{flex:1}.filter-select{max-width:190px}.data-toolbar .field{max-width:370px}.asset-table.large th,.asset-table.large td{padding:14px 17px}.asset-table.large .asset-host{max-width:300px}.cards-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.bookmark{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:18px;min-width:0}.bookmark-top{display:flex;justify-content:space-between;gap:8px}.bookmark h3{font-size:15px;margin:13px 0 5px}.bookmark p{font:11px ui-monospace,monospace;color:var(--muted);white-space:nowrap;text-overflow:ellipsis;overflow:hidden;margin:0 0 16px}.bookmark .button-row{display:flex;gap:7px}.tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-field{display:flex;flex-direction:column;gap:7px;font-size:12px;color:#acc0d1}.form-field label{font-size:11px;color:#a0b3c6;font-weight:600}.form-field.full{grid-column:1/-1}.form-field textarea{min-height:80px;resize:vertical}.result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:16px}.result-cell{padding:12px;border:1px solid var(--line);border-radius:9px;background:#0b1725}.result-cell small{display:block;color:var(--muted);font-size:11px}.result-cell b{display:block;margin-top:4px;font:13px ui-monospace,monospace;overflow-wrap:anywhere}.snippets{display:grid;gap:11px}.snippet{border:1px solid #26394c;border-radius:10px;background:#0c1724;padding:12px 14px}.snippet-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.snippet h3{font-size:13px;margin:0 0 2px}.snippet p{font-size:11px;color:var(--muted);margin:0}.snippet pre{margin:12px 0 0;white-space:pre-wrap;word-break:break-word;color:#a4edca;font:12px/1.7 Consolas,ui-monospace,monospace}.help-list{padding-left:18px;color:#b6c8d9;line-height:1.9}.help-list code{font-family:Consolas,monospace;color:var(--mint)}.note-layout{display:grid;grid-template-columns:1.3fr 1fr;gap:17px}.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}.fine-print{font-size:12px;color:var(--muted)}.fine-print code{font:12px Consolas,monospace;color:#bfe7df}.view-spacer{height:6px}
+    dialog{border:1px solid #3b5368;color:var(--text);background:#101b2a;border-radius:16px;max-width:min(95vw,580px);width:580px;padding:0;box-shadow:0 28px 90px #000b}dialog::backdrop{background:rgba(0,5,12,.78);backdrop-filter:blur(4px)}.dialog-head{padding:21px 25px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.dialog-head h2{margin:0;font-size:19px}.dialog-body{padding:21px 25px}.dialog-foot{display:flex;justify-content:flex-end;gap:9px;padding:17px 25px;border-top:1px solid var(--line)}.modal-close{background:transparent;border:0;font-size:23px;color:var(--muted);line-height:1}.check-field{display:flex;align-items:center;gap:9px;font-size:12px;color:#b9cce0}.check-field input{accent-color:var(--mint)}.toast-container{position:fixed;right:22px;bottom:22px;z-index:300;display:grid;gap:8px;pointer-events:none}.toast{background:#1c3340;border:1px solid #476b72;box-shadow:0 8px 30px #0007;color:#eafff6;padding:12px 17px;border-radius:10px;max-width:370px;font-size:12px}.toast.error{background:#3b202a;border-color:#82434c;color:#ffe4e8}.mobile-nav{display:none}.small-muted{font-size:11px;color:var(--muted)}.inline-code{font-family:Consolas,monospace;color:#d2e3ec}
+    @media(max-width:1150px){.main{padding:0 24px 55px}.layout-main{grid-template-columns:1fr}.tool-grid{grid-template-columns:1fr}.cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:760px){.shell{display:block}.sidebar{display:none}.mobile-nav{display:flex;position:sticky;bottom:0;z-index:30;background:#0b1523;border-top:1px solid var(--line);justify-content:space-around;padding:6px}.mobile-nav .nav-item{width:auto;flex:1;justify-content:center;flex-direction:column;gap:2px;font-size:10px;padding:8px 1px}.mobile-nav .nav-item .ico{font-size:18px}.mobile-nav .nav-item .count{display:none}.main{padding:0 14px 30px}.topbar{height:72px}.clock,.kbd{display:none}.search{width:150px}.page-head{align-items:start;padding:26px 0 19px}.page-head h1{font-size:26px}.page-actions .btn{padding:8px 10px}.grid-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric{min-height:102px;padding:14px}.metric .value{font-size:25px}.layout-main,.note-layout,.settings-grid{grid-template-columns:1fr}.cards-grid{grid-template-columns:1fr}.quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-row{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr 1fr}.panel-head{padding:16px}.panel-body{padding:0 16px 16px}.quick-grid{padding:0 16px 16px}.quick-ssh{padding:0 16px 16px}}
+    [hidden]{display:none!important}
+    .board-pick{border:1px solid #36516a;border-radius:9px;background:#122136;color:#e7f3fb;padding:9px;min-width:150px;max-width:240px}
+    .account-pill{border:1px solid #35526b;border-radius:20px;padding:7px 10px;color:#a9cdd4;font-size:12px;white-space:nowrap}
+    .access-note{margin:9px 0;padding:9px 12px;border:1px solid #35516a;background:#102638;border-radius:8px;color:#aacbd8;font-size:12px}
+    .users-table{width:100%;border-collapse:collapse}.users-table th,.users-table td{padding:12px;border-bottom:1px solid #2d4054;text-align:left;font-size:12px}
+    .share-entry{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #293a4d}
+    .share-entry select{max-width:150px}.manage-users{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+    @media(max-width:760px){.board-pick{max-width:130px}.topbar{height:auto;min-height:80px;flex-wrap:wrap;padding:12px 0}.topright{flex-wrap:wrap;gap:7px}.account-pill{display:none}.search{display:none}}
+    .ssh-dialog{max-width:min(96vw,1200px);width:1200px;height:min(87vh,810px);display:none;flex-direction:column;overflow:hidden;background:#09111d;padding:0}
+    .ssh-dialog[open]{display:flex}.ssh-head{padding:13px 18px;background:#142338;display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid #304358}.ssh-head b{font-size:14px}.ssh-head small{color:#96b0c5;font:12px ui-monospace,monospace;margin-left:14px}.ssh-mark{color:var(--mint);font-size:20px}.ssh-console{flex:1;min-height:0;overflow:hidden;padding:12px 14px;background:#090f18}.ssh-console .terminal{padding:0}.ssh-console .xterm{height:100%}.ssh-console .xterm-viewport{overflow-y:auto}.ssh-foot{display:flex;justify-content:space-between;gap:12px;padding:8px 16px;background:#112031;color:#8cb7c8;font:11px ui-monospace,monospace;border-top:1px solid #26384d}
+    @media(max-width:760px){.ssh-dialog{width:98vw;height:78vh}.ssh-head small{display:block;margin-left:0}.ssh-foot span:last-child{display:none}}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-symbol">⌘</div><div><b>NETOPS</b><small>COMMAND CENTER</small></div></div>
+    <div class="nav-section">WORKSPACE</div>
+    <nav id="desktopNav">
+      <button class="nav-item active" data-nav="home"><span class="ico">▦</span> Overview</button>
+      <button class="nav-item" data-nav="assets"><span class="ico">⌘</span> Device inventory <span class="count" id="sidebarAssetCount"></span></button>
+      <button class="nav-item" data-nav="links"><span class="ico">↗</span> Web resources</button>
+      <button class="nav-item" data-nav="tools"><span class="ico">⌁</span> Network toolbox</button>
+      <button class="nav-item" data-nav="notes"><span class="ico">≡</span> Daily workspace</button>
+    </nav>
+    <div class="nav-section" style="margin-top:33px">SYSTEM</div>
+    <nav><button class="nav-item" data-nav="settings"><span class="ico">⚙</span> Settings & backup</button><button class="nav-item" data-nav="users" id="usersNav" hidden><span class="ico">♙</span> Users & roles</button></nav>
+    <div class="sidebar-footer"><p><span class="dot" id="bridgeDot"></span><span id="bridgeLabel">Connecting to Umbrel…</span></p><p>Inventory, bookmarks and notes are saved on your Umbrel.</p><p style="color:#5e7186">v3.0 · multi-user</p></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="breadcrumb">OPERATIONS <span style="color:#445c72">/</span> <b id="crumb">Overview</b></div><div class="topright"><select id="boardPicker" class="board-pick" aria-label="Active dashboard"></select><button class="btn tiny" data-action="new-board" title="Create private or shared dashboard">＋ Board</button><button class="btn tiny" data-action="share-board" id="shareBoardBtn" title="Manage dashboard sharing">♧ Share</button><span id="boardAccess" class="chip">...</span><div class="search"><span>⌕</span><input id="globalSearch" aria-label="Search inventory and links" placeholder="Search devices…"><span class="kbd">Ctrl K</span></div><span class="account-pill" id="accountLabel"></span><span class="clock" id="clock"></span></div></header>
+    <section class="view active" id="view-home">
+      <div class="page-head"><div><p class="eyebrow">YOUR OPERATIONS SPACE</p><h1>Command Center<span class="accent">.</span></h1><p class="subheading">One home for your infrastructure, sessions, and daily workflow. <span id="boardSubtitle" class="accent"></span></p></div><div class="page-actions"><button class="btn subtle" data-action="check-all">↻ Check devices</button><button class="btn primary" data-action="new-asset">＋ Add device</button></div></div>
+      <div id="staticBanner" class="banner" hidden><strong>Backend offline:</strong> Web links and calculators still work. Connect to your Umbrel container to access shared data, browser SSH, and network diagnostics.</div>
+      <div class="grid-metrics"><div class="metric"><div class="label">Managed devices <span>⌘</span></div><div class="value" id="mDevices">0</div><div class="foot">Saved endpoints</div></div><div class="metric"><div class="label">Reachable <span class="accent">●</span></div><div class="value accent" id="mUp">—</div><div class="foot" id="mStatusFoot">Run device checks</div></div><div class="metric"><div class="label">Web resources <span>↗</span></div><div class="value" id="mLinks">0</div><div class="foot">Bookmarked consoles & docs</div></div><div class="metric"><div class="label">Daily tasks <span class="amber">◷</span></div><div class="value" id="mTasks">0 <small>/ 0</small></div><div class="foot">Completed today</div></div></div>
+      <div class="layout-main"><div class="stack">
+        <section class="panel"><div class="panel-head"><div><h2>Infrastructure watchlist</h2><p>Favorites for fast access and connection checks</p></div><button class="link-text" data-nav="assets">View all →</button></div><div class="table-wrap"><table class="asset-table"><thead><tr><th>Device</th><th>Category</th><th>Port status</th><th style="text-align:right">Launch</th></tr></thead><tbody id="homeAssets"></tbody></table></div><div class="panel-footer"><span class="status-line" id="checkSummary">TCP reachability is checked only when requested.</span><button class="btn tiny subtle" data-action="check-all">↻ Refresh</button></div></section>
+        <section class="panel"><div class="panel-head"><div><h2>Recent activity</h2><p>Local history of your launcher actions</p></div><button class="link-text" data-action="clear-activity">Clear</button></div><div class="panel-body"><div class="activity" id="activityList"></div></div></section>
+      </div><div class="stack">
+        <section class="panel"><div class="panel-head"><div><h2>Quick launch</h2><p>Bookmarked portals and documentation</p></div><button class="link-text" data-nav="links">Edit →</button></div><div class="quick-grid" id="homeLinks"></div></section>
+        <section class="panel"><div class="panel-head"><div><h2>Ad hoc SSH</h2><p>Jump to a host without saving it</p></div><span class="chip">Terminal</span></div><div class="quick-ssh"><input id="quickSSH" class="field" placeholder="user@hostname:22" aria-label="Quick SSH target"><button class="btn primary" data-action="quick-ssh">Connect</button></div><div class="panel-body"><p class="fine-print" style="margin:0">Supports <code>hostname</code>, <code>user@hostname</code>, or <code>user@hostname:port</code>.</p></div></section>
+        <section class="panel"><div class="panel-head"><div><h2>Daily checklist</h2><p>Routine shift checks</p></div><button class="link-text" data-action="reset-checklist">Reset</button></div><div class="panel-body"><div class="daily-list" id="homeChecklist"></div></div></section>
+      </div></div>
+    </section>
+    <section class="view" id="view-assets"><div class="page-head"><div><p class="eyebrow">ASSET MANAGEMENT</p><h1>Device inventory<span class="accent">.</span></h1><p class="subheading">Manage SSH/RDP destinations, management URLs, and watchlist devices.</p></div><button class="btn primary" data-action="new-asset">＋ New device</button></div><div class="data-toolbar"><input class="field grow" id="assetFilter" placeholder="Filter by hostname, category or device name…"><select class="control filter-select" id="categoryFilter"><option value="">All categories</option></select><button class="btn" data-action="check-all">↻ Check TCP</button></div><div class="panel"><div class="table-wrap"><table class="asset-table large"><thead><tr><th>Device / Host</th><th>Category</th><th>TCP status</th><th>Favorite</th><th style="text-align:right">Actions</th></tr></thead><tbody id="allAssets"></tbody></table></div></div><p class="fine-print">Checks originate from the Umbrel container and only run when clicked. The check probes a configured TCP port (not a subnet scan), and does not prove credentials or application health.</p></section>
+    <section class="view" id="view-links"><div class="page-head"><div><p class="eyebrow">BOOKMARK LIBRARY</p><h1>Web resources<span class="accent">.</span></h1><p class="subheading">Management interfaces, runbooks, vendor docs, and useful links.</p></div><button class="btn primary" data-action="new-link">＋ Add bookmark</button></div><div class="cards-grid" id="allLinks"></div></section>
+    <section class="view" id="view-tools"><div class="page-head"><div><p class="eyebrow">ENGINEERING UTILITIES</p><h1>Network toolbox<span class="accent">.</span></h1><p class="subheading">Subnet calculations, diagnostics, and quick-copy command reference.</p></div></div><div class="tool-grid">
+      <div class="stack"><section class="panel"><div class="panel-head"><div><h2>IPv4 subnet calculator</h2><p>Network, mask, usable range, and capacity</p></div><span class="chip">IPv4</span></div><div class="panel-body"><div class="form-row"><div class="form-field full"><label for="cidrInput">IPv4 address / prefix</label><div style="display:flex;gap:8px"><input class="field" id="cidrInput" value="192.168.10.35/27" placeholder="10.0.1.10/24"><button class="btn primary" data-action="calc-subnet">Calculate</button></div></div></div><div id="cidrResult" class="result-grid"></div></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>IPv6 prefix calculator</h2><p>Canonical network prefix, range, and capacity</p></div><span class="chip">IPv6</span></div><div class="panel-body"><div class="form-field"><label for="ipv6Input">IPv6 address / prefix</label><div style="display:flex;gap:8px"><input class="field" id="ipv6Input" value="2001:db8:abcd:10::15/64" placeholder="2001:db8::1/64"><button class="btn primary" data-action="calc-ipv6">Calculate</button></div></div><div class="result-grid" id="ipv6Result"></div></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Host diagnostics</h2><p>Runs on your Umbrel container, only when requested</p></div><span class="chip">On demand</span></div><div class="panel-body"><div class="form-field"><label for="diagHost">Hostname / IP</label><input id="diagHost" class="field" placeholder="router.example.net"></div><div class="page-actions" style="margin:12px 0"><button class="btn" data-action="diagnostic" data-task="ping">Ping × 3</button><button class="btn" data-action="diagnostic" data-task="trace">Traceroute</button><button class="btn" data-action="diagnostic" data-task="dns">DNS lookup</button></div><div class="terminal" id="diagOutput"><span class="prompt">netops$</span> Enter a host and select a diagnostic.</div></div></section></div>
+      <section class="panel"><div class="panel-head"><div><h2>Command snippets</h2><p>Copy read-only commands for common platforms</p></div><button class="link-text" data-action="new-snippet">＋ Add</button></div><div class="panel-body"><div class="snippets" id="snippetList"></div></div></section>
+    </div></section>
+    <section class="view" id="view-notes"><div class="page-head"><div><p class="eyebrow">PERSONAL WORKSPACE</p><h1>Daily workspace<span class="accent">.</span></h1><p class="subheading">Scratch notes and shift checklist, saved to the selected Umbrel dashboard.</p></div><button class="btn" data-action="reset-checklist">↻ Reset checklist</button></div><div class="note-layout"><section class="panel"><div class="panel-head"><div><h2>Shift notes</h2><p>Autosaved to selected dashboard</p></div><span class="chip healthy">● Umbrel</span></div><div class="panel-body"><textarea id="workspaceNotes" class="note-pad" style="min-height:380px" placeholder="Troubleshooting notes, incident numbers, change windows, useful commands…"></textarea><p class="small-muted">Do not store passwords, private keys, or other secrets here. Do not place credentials or private keys here.</p></div></section><section class="panel"><div class="panel-head"><div><h2>Shift checklist</h2><p>Editable tasks for recurring daily operations</p></div></div><div class="panel-body"><div class="daily-list" id="fullChecklist"></div><div style="display:flex;gap:8px;margin-top:23px"><input class="field" id="newTask" placeholder="Add a routine task…"><button class="btn primary" data-action="add-task">＋ Add</button></div></div></section></div></section>
+    <section class="view" id="view-settings"><div class="page-head"><div><p class="eyebrow">APPLICATION CONTROL</p><h1>Settings & backup<span class="accent">.</span></h1><p class="subheading">Umbrel service health, centralized storage, and security practices.</p></div></div><div class="settings-grid">
+      <section class="panel"><div class="panel-head"><div><h2>Umbrel backend</h2><p>Browser SSH and on-demand network diagnostics</p></div><span class="chip" id="settingsBridgeState">Checking…</span></div><div class="panel-body"><p class="fine-print">This self-hosted Docker service runs on your Umbrel. SSH opens as an interactive terminal inside your browser. The SSH connection originates from Umbrel, not your Windows workstation. An initial host-key prompt must be checked against a trusted fingerprint.</p><p class="fine-print" style="margin-top:14px"><strong>RDP:</strong> downloads a standard <code>.rdp</code> file for your local Remote Desktop client. Network checks and diagnostics are opt-in and are never scheduled automatically.</p><button class="btn" data-action="check-bridge">↻ Recheck service</button> <button class="btn danger" data-action="logout">Sign out</button></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Import & export</h2><p>Back up your centralized inventory</p></div></div><div class="panel-body"><p class="fine-print">Data is stored on Umbrel in a persistent Docker volume and shared across signed-in browsers. Export a JSON backup for safekeeping or migration.</p><div class="page-actions"><button class="btn primary" data-action="export">↓ Export JSON</button><button class="btn" data-action="import">↑ Import JSON</button><input id="importFile" type="file" accept=".json,application/json" hidden></div><p class="fine-print" style="margin-top:18px">Import replaces data in the selected dashboard only. Revision checks prevent silent overwrites when another user has saved newer data.</p></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Account security</h2><p>Change your personal dashboard password</p></div></div><div class="panel-body"><form id="passwordForm"><div class="form-field"><label>Current password</label><input type="password" class="field" name="current" required autocomplete="current-password" maxlength="256"></div><div class="form-field" style="margin-top:10px"><label>New password (14+ characters)</label><input type="password" class="field" name="next" required minlength="14" maxlength="256" autocomplete="new-password"></div><button class="btn primary" style="margin-top:14px" type="submit">Update my password</button></form><p class="fine-print">Changing your password signs you out on all devices.</p></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Operational safety</h2><p>Suggestions for keeping the workstation secure</p></div></div><div class="panel-body"><ul class="help-list"><li>SSH uses OpenSSH in a container terminal; passwords can be typed at the remote host prompt, but are not saved by NETOPS. For keys, use the persistent container SSH directory.</li><li>This dashboard requires a login. Restrict LAN/VPN access and use HTTPS for remote use; do not publicly expose this management endpoint.</li><li>Open untrusted management UIs only over trusted networks or VPN.</li><li>Do not save secrets in bookmarks, notes, or command snippets.</li></ul></div></section>
+      <section class="panel"><div class="panel-head"><div><h2>Restore defaults</h2><p>Reset sample entries and personal modifications</p></div></div><div class="panel-body"><p class="fine-print">This replaces inventory, notes and bookmarks on the selected dashboard only. Export a backup first.</p><button class="btn danger" data-action="reset-all">Reset selected dashboard</button></div></section>
+    </div></section>
+    <section class="view" id="view-users"><div class="page-head"><div><p class="eyebrow">ADMINISTRATION</p><h1>Users & roles<span class="accent">.</span></h1><p class="subheading">Local accounts. Administrators can create users and manage their access.</p></div></div><div class="settings-grid"><section class="panel"><div class="panel-head"><h2>Create account</h2></div><div class="panel-body"><form id="createUserForm"><div class="form-field"><label>Username</label><input name="username" class="field" required minlength="3" maxlength="32" pattern="[A-Za-z][A-Za-z0-9._-]{2,31}" placeholder="neteng01"></div><div class="form-field" style="margin-top:12px"><label>Temporary password (14+ characters)</label><input name="password" class="field" required type="password" minlength="14" maxlength="256" autocomplete="new-password"></div><div class="form-field" style="margin-top:12px"><label>Role</label><select name="role" class="control"><option value="user">User</option><option value="admin">Admin</option></select></div><button type="submit" class="btn primary" style="margin-top:16px">＋ Create account</button></form><p class="fine-print">New users receive a private workspace and access to the shared Operations board. Share other boards explicitly.</p></div></section><section class="panel"><div class="panel-head"><h2>Account permissions</h2></div><div class="panel-body"><p class="fine-print">Admins manage all users and boards. Users manage their own dashboards and can access team or individually shared dashboards. For individual boards, view access is read-only and edit access can change inventory, bookmarks and notes.</p><p class="fine-print">Dashboard access grants the ability to launch management connections and network diagnostics. Only invite trusted engineers.</p></div></section></div><section class="panel" style="margin-top:18px"><div class="panel-head"><h2>Existing accounts</h2><button class="btn tiny" data-action="refresh-users">↻ Refresh</button></div><div class="table-wrap"><table class="users-table"><thead><tr><th>Username</th><th>Role</th><th>Status</th><th>Manage</th></tr></thead><tbody id="usersTable"></tbody></table></div></section></section>
+  </main>
+</div>
+<nav class="mobile-nav" aria-label="Mobile navigation"><button class="nav-item active" data-nav="home"><span class="ico">▦</span>Home</button><button class="nav-item" data-nav="assets"><span class="ico">⌘</span>Devices</button><button class="nav-item" data-nav="links"><span class="ico">↗</span>Links</button><button class="nav-item" data-nav="tools"><span class="ico">⌁</span>Tools</button><button class="nav-item" data-nav="notes"><span class="ico">≡</span>Notes</button><button class="nav-item" data-nav="settings"><span class="ico">⚙</span>Setup</button></nav>
+<dialog id="assetDialog"><form id="assetForm"><div class="dialog-head"><h2 id="assetDialogTitle">Add device</h2><button type="button" class="modal-close" data-action="close-dialog" aria-label="Close">×</button></div><div class="dialog-body"><input type="hidden" name="id"><div class="form-row"><div class="form-field full"><label>Display name *</label><input class="field" name="name" required maxlength="80" placeholder="e.g. core-sw01"></div><div class="form-field"><label>Host / IP</label><input class="field" name="host" maxlength="253" placeholder="10.10.10.1 or hostname"></div><div class="form-field"><label>Category</label><input class="field" name="category" maxlength="40" placeholder="Switches, Lab, Security…"></div><div class="form-field"><label>Connection mode</label><select name="mode" class="control"><option value="ssh">SSH</option><option value="rdp">RDP</option><option value="both">Both</option></select></div><div class="form-field"><label>SSH port</label><input class="field" name="port" type="number" min="1" max="65535" value="22"></div><div class="form-field"><label>SSH username (optional)</label><input class="field" name="username" maxlength="64" placeholder="admin"></div><div class="form-field"><label>TCP check port (optional)</label><input class="field" name="checkPort" type="number" min="1" max="65535" placeholder="Uses SSH/RDP port"></div><div class="form-field full"><label>Web management URL (http/https)</label><input class="field" name="url" maxlength="1000" placeholder="https://10.10.10.1"></div><div class="form-field full"><label>Notes</label><textarea class="field" name="notes" maxlength="2000" placeholder="Location, purpose, jump host details…"></textarea></div><label class="check-field"><input name="favorite" type="checkbox" checked> Show in dashboard watchlist</label></div></div><div class="dialog-foot"><button type="button" class="btn" data-action="close-dialog">Cancel</button><button class="btn primary" type="submit">Save device</button></div></form></dialog>
+<dialog id="linkDialog"><form id="linkForm"><div class="dialog-head"><h2 id="linkDialogTitle">Add bookmark</h2><button class="modal-close" type="button" data-action="close-dialog" aria-label="Close">×</button></div><div class="dialog-body"><input type="hidden" name="id"><div class="form-row"><div class="form-field full"><label>Name *</label><input class="field" name="name" maxlength="80" required placeholder="e.g. Monitoring dashboard"></div><div class="form-field full"><label>URL *</label><input class="field" name="url" maxlength="1000" required placeholder="https://…"></div><div class="form-field"><label>Category</label><input class="field" name="category" maxlength="40" placeholder="Documentation"></div><div class="form-field"><label>Symbol (1–2 chars)</label><input class="field" name="symbol" maxlength="2" placeholder="↗"></div><label class="check-field"><input type="checkbox" name="favorite" checked> Show in dashboard quick launch</label></div></div><div class="dialog-foot"><button type="button" class="btn" data-action="close-dialog">Cancel</button><button type="submit" class="btn primary">Save bookmark</button></div></form></dialog>
+<dialog id="snippetDialog"><form id="snippetForm"><div class="dialog-head"><h2 id="snippetDialogTitle">Add snippet</h2><button class="modal-close" type="button" data-action="close-dialog" aria-label="Close">×</button></div><div class="dialog-body"><input type="hidden" name="id"><div class="form-row"><div class="form-field full"><label>Name *</label><input class="field" name="name" maxlength="80" required placeholder="e.g. IOS-XE interface summary"></div><div class="form-field full"><label>Category</label><input class="field" name="category" maxlength="60" placeholder="IOS-XE"></div><div class="form-field full"><label>Command *</label><textarea class="field" name="command" required maxlength="3000" style="min-height:120px" placeholder="show ip interface brief"></textarea></div></div></div><div class="dialog-foot"><button type="button" class="btn" data-action="close-dialog">Cancel</button><button class="btn primary" type="submit">Save snippet</button></div></form></dialog>
+<dialog id="resetPasswordDialog"><form id="resetPasswordForm"><div class="dialog-head"><h2>Reset account password</h2><button type="button" class="modal-close" data-action="close-dialog">×</button></div><div class="dialog-body"><input type="hidden" name="userId"><p class="fine-print" id="resetPasswordLabel"></p><div class="form-field"><label>New password (14+ characters)</label><input type="password" class="field" name="password" required minlength="14" maxlength="256" autocomplete="new-password"></div><p class="fine-print">The affected user will be signed out from existing sessions.</p></div><div class="dialog-foot"><button type="button" class="btn" data-action="close-dialog">Cancel</button><button type="submit" class="btn primary">Reset password</button></div></form></dialog>
+<dialog id="boardDialog"><form id="boardForm"><div class="dialog-head"><h2>Create dashboard</h2><button type="button" class="modal-close" data-action="close-dialog">×</button></div><div class="dialog-body"><div class="form-field"><label>Name</label><input class="field" name="name" maxlength="70" required placeholder="My lab / NOC / Change windows"></div><div class="form-field" style="margin-top:15px"><label>Everyone's default access</label><select class="control" name="teamAccess"><option value="none">Private (invite individually)</option><option value="view">Team: view only</option><option value="edit">Team: edit</option></select></div><p class="fine-print">The creator and administrators can always edit and manage sharing.</p></div><div class="dialog-foot"><button type="button" class="btn" data-action="close-dialog">Cancel</button><button class="btn primary" type="submit">Create dashboard</button></div></form></dialog>
+<dialog id="shareDialog"><form id="shareForm"><div class="dialog-head"><h2>Share dashboard</h2><button type="button" class="modal-close" data-action="close-dialog">×</button></div><div class="dialog-body"><div class="form-field"><label>Dashboard name</label><input class="field" name="name" required maxlength="70"></div><div class="form-field" style="margin-top:14px"><label>All users in this NETOPS instance</label><select name="teamAccess" class="control"><option value="none">No default access · invitations only</option><option value="view">Can view</option><option value="edit">Can edit</option></select></div><p class="access-note">Individual grants override the team default. Administrators always have full access.</p><div id="shareMembers"></div></div><div class="dialog-foot"><button class="btn" type="button" data-action="close-dialog">Cancel</button><button class="btn primary" type="submit">Save sharing</button></div></form></dialog>
+<dialog id="sshDialog" class="ssh-dialog">
+  <div class="ssh-head"><span><span class="ssh-mark">⌁</span> <b id="sshTitle">SSH Terminal</b><small id="sshMeta">Connecting…</small></span><button type="button" class="btn tiny" id="sshClose">✕ Close session</button></div>
+  <div class="ssh-console" id="sshConsole" tabindex="0"></div>
+  <div class="ssh-foot"><span id="sshStatus">Starting session…</span><span>SSH runs from Umbrel • Verify unknown host fingerprints</span></div>
+</dialog>
+<div class="toast-container" id="toasts" aria-live="polite"></div>
+<script>
+(() => {
+  'use strict';
+  // The selected board is a browser preference; all board contents stay in the Umbrel database.
+  const BOARD_KEY='netops-selected-board-v3';
+  const $ = (s,root=document)=>root.querySelector(s);
+  const $$ = (s,root=document)=>[...root.querySelectorAll(s)];
+  const esc = v => String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const uid = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : String(Date.now())+Math.random().toString(16).slice(2);
+  const defaults = () => ({
+    assets:[
+      {id:'cml',name:'Lab Host',host:'',username:'',port:22,checkPort:22,mode:'ssh',url:'',category:'Lab',favorite:true,notes:'Configure the lab host management address and SSH username.'},
+      {id:'unifi',name:'UniFi Gateway',host:'',username:'',port:22,checkPort:443,mode:'ssh',url:'',category:'Network',favorite:true,notes:'Configure your gateway management address.'},
+      {id:'truenas',name:'TrueNAS Storage',host:'',username:'',port:22,checkPort:443,mode:'ssh',url:'',category:'Storage',favorite:true,notes:'Configure your NAS management address.'},
+      {id:'proxmox',name:'Proxmox VE',host:'',username:'',port:22,checkPort:8006,mode:'ssh',url:'',category:'Virtualization',favorite:true,notes:'Configure your hypervisor management address.'}
+    ],
+    links:[
+      {id:'ciscodoc',name:'Cisco DevNet',url:'https://developer.cisco.com/',category:'Documentation',symbol:'C',favorite:true},
+      {id:'rfc',name:'RFC Editor',url:'https://www.rfc-editor.org/',category:'Reference',symbol:'R',favorite:true},
+      {id:'ripe',name:'RIPEstat',url:'https://stat.ripe.net/',category:'Troubleshooting',symbol:'R',favorite:true},
+      {id:'cloudflare',name:'Cloudflare Radar',url:'https://radar.cloudflare.com/',category:'Internet visibility',symbol:'◉',favorite:true}
+    ],
+    snippets:[
+      {id:'s1',name:'Interface overview',category:'Cisco IOS-XE',command:'show ip interface brief'},
+      {id:'s2',name:'Routing table',category:'Cisco IOS-XE',command:'show ip route'},
+      {id:'s3',name:'BGP summary',category:'Cisco IOS-XE',command:'show bgp ipv4 unicast summary'},
+      {id:'s4',name:'IPsec SA details',category:'Cisco IOS-XE',command:'show crypto ikev2 sa detail'},
+      {id:'s5',name:'Neighbor discovery',category:'Cisco IOS-XE',command:'show cdp neighbors detail'},
+      {id:'s6',name:'Linux addresses & routes',category:'Linux',command:'ip -br addr && ip route'}
+    ],
+    tasks:[{id:'t1',text:'Review alarms and current incidents',done:false},{id:'t2',text:'Check critical WAN / VPN paths',done:false},{id:'t3',text:'Verify backup and monitoring alerts',done:false},{id:'t4',text:'Review changes and open tickets',done:false}],
+    notes:'',activity:[]
+  });
+  let state=defaults();
+  let bridge=false, token='', bridgeInfo=null, view='home', statuses={}, checking=false;
+  let stateLoaded=false, saveHandle=null, saveSequence=Promise.resolve();
+  let dashboards=[],activeBoard='',boardRevs={},canEdit=true,account=null,saveBlocked=false,shareUsers=[];
+  const save=()=>{if(!stateLoaded||!activeBoard||!canEdit){if(!canEdit)toast('This dashboard is read-only','error');return}
+    if(saveBlocked){toast('Save conflict. Export your current work then reload this dashboard.','error');return}
+    clearTimeout(saveHandle);saveHandle=setTimeout(queueSave,290)};
+  function queueSave(){
+    if(!stateLoaded||!canEdit||saveBlocked)return;
+    clearTimeout(saveHandle);saveHandle=null;
+    const bid=activeBoard,snapshot=JSON.stringify(state);
+    saveSequence=saveSequence.catch(()=>{}).then(async()=>{
+      if(saveBlocked)return;
+      const r=await fetch('/api/state?board='+encodeURIComponent(bid),{method:'PUT',headers:{'Content-Type':'application/json','X-NETOPS-Token':token},
+        body:JSON.stringify({state:JSON.parse(snapshot),revision:boardRevs[bid]})});
+      const answer=await r.json();
+      if(r.status===401){location.href='/login';return}
+      if(r.status===409){saveBlocked=true;toast('Save conflict: another engineer updated this board. Export JSON, then reload.','error');return}
+      if(!r.ok)throw Error(answer.error||'Dashboard save failed');
+      boardRevs[bid]=answer.revision;
+    }).catch(err=>toast(err.message,'error'));
+    return saveSequence;
+  }
+  async function apiRequest(path,method='GET',data){
+    const r=await fetch(path,{method,cache:'no-store',headers:method==='GET'?{}:{'Content-Type':'application/json','X-NETOPS-Token':token},
+      ...(method==='GET'?{}:{body:JSON.stringify(data||{})})});
+    if(r.status===401){location.href='/login';throw Error('Session expired')}
+    const result=await r.json();if(!r.ok)throw Error(result.error||'Request failed');return result;
+  }
+  async function refreshBoards(preferred){
+    const data=await apiRequest('/api/boards');dashboards=data.dashboards;
+    const sel=$('#boardPicker');sel.innerHTML=dashboards.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');
+    const next=preferred&&dashboards.find(x=>x.id===preferred)?preferred:
+      (localStorage.getItem(BOARD_KEY)&&dashboards.find(x=>x.id===localStorage.getItem(BOARD_KEY))?localStorage.getItem(BOARD_KEY):dashboards[0]?.id);
+    if(!next){toast('No dashboards accessible','error');return}
+    await switchBoard(next,false);
+  }
+  async function switchBoard(id,flush=true){
+    const selected=dashboards.find(x=>x.id===id);if(!selected)return;
+    if(flush){if(saveHandle)queueSave();await saveSequence;}
+    if(saveBlocked && flush && !confirm('This dashboard has unsaved changes after a conflict. Export JSON first. Switch anyway?'))return;
+    try{
+      const result=await apiRequest('/api/state?board='+encodeURIComponent(id));
+      activeBoard=id;boardRevs[id]=result.revision;state=validateData(result.state)||defaults();
+      canEdit=['owner','edit'].includes(result.access);saveBlocked=false;stateLoaded=true;statuses={};
+      localStorage.setItem(BOARD_KEY,id);$('#boardPicker').value=id;$('#boardAccess').textContent=canEdit?'Edit access':'Read-only';
+      $('#boardSubtitle').textContent=selected.name;$('#shareBoardBtn').hidden=result.access!=='owner';
+      applyEditorMode();render();
+    }catch(err){toast('Could not load dashboard: '+err.message,'error')}
+  }
+  function applyEditorMode(){
+    $('#workspaceNotes').readOnly=!canEdit;
+    for(const selector of ['#newTask','#assetForm button[type=submit]','#linkForm button[type=submit]','#snippetForm button[type=submit]']){
+      const element=$(selector);if(element)element.disabled=!canEdit;
+    }
+  }
+  const safeUrl = url => {try {const u=new URL(String(url).trim());return ['http:','https:'].includes(u.protocol)?u.href:''}catch{return ''}};
+  function validateData(obj){
+    if(!obj || typeof obj!=='object'||!Array.isArray(obj.assets)||!Array.isArray(obj.links))return null;
+    const limited=(v,n)=>String(v??'').slice(0,n);
+    return {
+      assets:obj.assets.slice(0,500).filter(x=>x&&typeof x==='object').map(x=>({id:limited(x.id||uid(),100),name:limited(x.name,80),host:limited(x.host,253),username:limited(x.username,64),port:validPort(x.port,22),checkPort:x.checkPort?validPort(x.checkPort,22):0,mode:['ssh','rdp','both'].includes(x.mode)?x.mode:'ssh',url:safeUrl(x.url),category:limited(x.category,40),favorite:!!x.favorite,notes:limited(x.notes,2000)})).filter(x=>x.name),
+      links:obj.links.slice(0,500).filter(x=>x&&typeof x==='object').map(x=>({id:limited(x.id||uid(),100),name:limited(x.name,80),url:safeUrl(x.url),category:limited(x.category,40),symbol:limited(x.symbol||'↗',2),favorite:!!x.favorite})).filter(x=>x.name&&x.url),
+      snippets:(Array.isArray(obj.snippets)?obj.snippets:[]).slice(0,200).filter(x=>x&&typeof x==='object').map(x=>({id:limited(x.id||uid(),100),name:limited(x.name,80),category:limited(x.category,60),command:limited(x.command,3000)})).filter(x=>x.name&&x.command),
+      tasks:(Array.isArray(obj.tasks)?obj.tasks:[]).slice(0,100).filter(x=>x&&typeof x==='object').map(x=>({id:limited(x.id||uid(),100),text:limited(x.text,140),done:!!x.done})).filter(x=>x.text),
+      notes:limited(obj.notes,100000),
+      activity:(Array.isArray(obj.activity)?obj.activity:[]).slice(0,20).filter(x=>x&&typeof x==='object').map(x=>({text:limited(x.text,180),time:limited(x.time,30)}))
+    };
+  }
+  function validPort(v,fb=22){const n=Number(v);return Number.isInteger(n)&&n>=1&&n<=65535?n:fb}
+  function cleanHost(raw){return String(raw||'').trim().replace(/^\[([^\]]+)\]$/,'$1')}
+  function hostOK(raw){const h=cleanHost(raw);if(!h||h.length>253||/[\s/?#\\'"<>;&|$`]/.test(h)||h.startsWith('-'))return false;return /^(?:[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]|[a-zA-Z0-9]|[a-fA-F0-9:%.]+)$/.test(h)}
+  const short=(s,n=40)=>String(s||'').length>n?String(s).slice(0,n-1)+'…':String(s||'');
+  function toast(message,type='ok'){const e=document.createElement('div');e.className='toast'+(type==='error'?' error':'');e.textContent=message;$('#toasts').append(e);setTimeout(()=>e.remove(),3800)}
+  function logActivity(message){state.activity.unshift({text:message,time:new Date().toISOString()});state.activity=state.activity.slice(0,15);save();renderActivity()}
+  async function copy(str){try{await navigator.clipboard.writeText(str);toast('Copied to clipboard');return true}catch{let el=document.createElement('textarea');el.value=str;document.body.append(el);el.select();const ok=document.execCommand('copy');el.remove();toast(ok?'Copied to clipboard':'Clipboard unavailable; select the command manually',ok?'ok':'error');return ok}}
+  function setView(next){view=next;$$('.view').forEach(el=>el.classList.toggle('active',el.id==='view-'+next));$$('[data-nav]').forEach(el=>el.classList.toggle('active',el.dataset.nav===next));const title={home:'Overview',assets:'Device inventory',links:'Web resources',tools:'Network toolbox',notes:'Daily workspace',settings:'Settings & backup',users:'Users & roles'}[next];$('#crumb').textContent=title;window.scrollTo({top:0,behavior:'smooth'});if(next==='assets')renderAssets();if(next==='links')renderLinks();if(next==='tools')renderSnippets();if(next==='users')loadUsers()}
+  function statusChip(a){if(!a.host)return '<span class="chip pending">Not configured</span>';const s=statuses[a.id];return s?`<span class="chip ${s.ok?'healthy':'unhealthy'}">● ${s.ok?'Open':'Closed / unreachable'}</span>`:'<span class="chip pending">◌ Not checked</span>'}
+  function assetActions(a,full=false){const id=esc(a.id),hostok=hostOK(a.host),mode=a.mode||'ssh';return `<div class="row-actions">${a.url?`<button data-action="web-asset" data-id="${id}" title="Open management URL">↗ Web</button>`:''}${mode!=='rdp'?`<button data-action="ssh" data-id="${id}" ${hostok?'':'disabled'} title="Open SSH in browser">⌁ SSH</button>`:''}${mode!=='ssh'?`<button data-action="rdp" data-id="${id}" ${hostok?'':'disabled'} title="Download local RDP connection file">↓ RDP</button>`:''}${full?`<button data-action="edit-asset" data-id="${id}">Edit</button><button data-action="delete-asset" data-id="${id}" title="Delete">×</button>`:''}</div>`}
+  function renderHome(){const a=state.assets.filter(x=>x.favorite).slice(0,7);$('#homeAssets').innerHTML=a.length?a.map(x=>`<tr><td><span class="asset-name">${esc(x.name)}</span><span class="asset-host">${esc(x.host||'Awaiting hostname / IP')}</span></td><td><span class="chip">${esc(x.category||'Uncategorized')}</span></td><td>${statusChip(x)}</td><td>${assetActions(x)}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">No favorites yet. Add a device and mark it as a favorite.</td></tr>';
+    const links=state.links.filter(x=>x.favorite).slice(0,6);$('#homeLinks').innerHTML=links.length?links.map(x=>`<a class="link-card" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" data-action="open-link" data-id="${esc(x.id)}"><span class="link-symbol">${esc(x.symbol||'↗')}</span><span style="min-width:0"><div class="name">${esc(x.name)}</div><div class="detail">${esc(x.category||'Bookmark')}</div></span></a>`).join(''):'<div class="empty">Add favorite bookmarks to see them here.</div>';
+    $('#mDevices').textContent=state.assets.length;$('#mLinks').textContent=state.links.length;$('#sidebarAssetCount').textContent=state.assets.length;
+    const checked=Object.values(statuses);$('#mUp').textContent=checked.length?String(checked.filter(x=>x.ok).length):'—';$('#mStatusFoot').textContent=checked.length?`${checked.length} port checks completed`:'Run device checks';const done=state.tasks.filter(x=>x.done).length;$('#mTasks').innerHTML=`${done} <small>/ ${state.tasks.length}</small>`;$('#checkSummary').textContent=checking?'Checking configured ports…':checked.length?`${checked.filter(x=>x.ok).length} reachable of ${checked.length} checked · TCP probes`:'TCP reachability is checked only when requested.';
+    renderChecklist();renderActivity();
+  }
+  function renderAssets(){const filter=$('#assetFilter').value.trim().toLowerCase();const cat=$('#categoryFilter').value;const cats=[...new Set(state.assets.map(x=>x.category).filter(Boolean))].sort();$('#categoryFilter').innerHTML='<option value="">All categories</option>'+cats.map(x=>`<option value="${esc(x)}" ${x===cat?'selected':''}>${esc(x)}</option>`).join('');const items=state.assets.filter(x=>(!cat||x.category===cat)&&(!filter||[x.name,x.host,x.category,x.notes].some(y=>String(y||'').toLowerCase().includes(filter))));$('#allAssets').innerHTML=items.length?items.map(a=>`<tr><td><span class="asset-name">${esc(a.name)}</span><span class="asset-host">${esc(a.host||'Not configured')}</span></td><td>${esc(a.category||'—')}</td><td>${statusChip(a)}</td><td><button class="btn tiny ${a.favorite?'primary':'subtle'}" data-action="toggle-favorite" data-id="${esc(a.id)}" aria-label="Toggle favorite">${a.favorite?'★':'☆'}</button></td><td>${assetActions(a,true)}</td></tr>`).join(''):'<tr><td colspan="5" class="empty">No matching devices.</td></tr>';}
+  function renderLinks(){const items=state.links;$('#allLinks').innerHTML=items.length?items.map(x=>`<article class="bookmark"><div class="bookmark-top"><span class="link-symbol">${esc(x.symbol||'↗')}</span><span class="chip">${esc(x.category||'Bookmark')}</span></div><h3>${esc(x.name)} ${x.favorite?'<span class="accent">★</span>':''}</h3><p title="${esc(x.url)}">${esc(x.url)}</p><div class="button-row"><button class="btn tiny primary" data-action="open-link-button" data-id="${esc(x.id)}">↗ Open</button><button class="btn tiny" data-action="edit-link" data-id="${esc(x.id)}">Edit</button><button class="btn tiny danger" data-action="delete-link" data-id="${esc(x.id)}">Delete</button></div></article>`).join(''):'<div class="empty">No bookmarks. Add your first web resource.</div>'}
+  function renderChecklist(){for(const selector of ['#homeChecklist','#fullChecklist'])$(selector).innerHTML=state.tasks.length?state.tasks.map(x=>`<label class="task ${x.done?'done':''}"><input type="checkbox" data-task-id="${esc(x.id)}" ${x.done?'checked':''}><span>${esc(x.text)}</span>${selector==='#fullChecklist'?`<button type="button" class="btn tiny subtle" style="margin-left:auto" data-action="delete-task" data-id="${esc(x.id)}">×</button>`:''}</label>`).join(''):'<p class="fine-print">No tasks. Add one from the Daily workspace tab.</p>'}
+  function renderActivity(){const items=state.activity.slice(0,5);$('#activityList').innerHTML=items.length?items.map(x=>`<div class="event"><span class="event-icon">›</span><span class="event-main">${esc(x.text)}</span><span class="event-time">${formatTime(x.time)}</span></div>`).join(''):'<div class="empty">No recent activity. Launch a device or open a bookmarked link.</div>'}
+  function formatTime(s){const d=new Date(s);return isNaN(d)?'':d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
+  function renderSnippets(){$('#snippetList').innerHTML=state.snippets.length?state.snippets.map(x=>`<div class="snippet"><div class="snippet-top"><div><h3>${esc(x.name)}</h3><p>${esc(x.category||'General')}</p></div><div class="row-actions"><button data-action="copy-snippet" data-id="${esc(x.id)}">Copy</button><button data-action="edit-snippet" data-id="${esc(x.id)}">Edit</button><button data-action="delete-snippet" data-id="${esc(x.id)}">×</button></div></div><pre>${esc(x.command)}</pre></div>`).join(''):'<p class="fine-print">No saved command snippets.</p>'}
+  function render(){renderHome();renderAssets();renderLinks();renderSnippets();$('#workspaceNotes').value=state.notes;}
+  function dialogOpen(id){document.getElementById(id).showModal()}
+  function addAsset(a){const f=$('#assetForm');f.reset();f.elements.id.value='';f.elements.port.value=22;f.elements.mode.value='ssh';f.elements.favorite.checked=true;$('#assetDialogTitle').textContent='Add device';if(a)for(const [k,v] of Object.entries(a)){if(!f.elements[k])continue;if(k==='favorite')f.elements[k].checked=v;else f.elements[k].value=v??''}if(a)$('#assetDialogTitle').textContent='Edit device';dialogOpen('assetDialog')}
+  function addLink(a){const f=$('#linkForm');f.reset();f.elements.id.value='';f.elements.favorite.checked=true;$('#linkDialogTitle').textContent=a?'Edit bookmark':'Add bookmark';if(a)for(const [k,v] of Object.entries(a)){if(!f.elements[k])continue;if(k==='favorite')f.elements[k].checked=v;else f.elements[k].value=v??''}dialogOpen('linkDialog')}
+  function addSnippet(a){const f=$('#snippetForm');f.reset();f.elements.id.value='';$('#snippetDialogTitle').textContent=a?'Edit snippet':'Add snippet';if(a)for(const [k,v] of Object.entries(a))if(f.elements[k])f.elements[k].value=v??'';dialogOpen('snippetDialog')}
+  async function api(path,data){if(!bridge||!token)throw Error('Umbrel backend is offline');const response=await fetch('/api/'+path,{method:'POST',headers:{'Content-Type':'application/json','X-NETOPS-Token':token},body:JSON.stringify(data)});const parsed=await response.json();if(!response.ok)throw Error(parsed.error||'Bridge request failed');return parsed}
+  async function detectBridge(){try{const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),1900);const res=await fetch('/api/bridge',{signal:ctl.signal,cache:'no-store'});clearTimeout(t);if(!res.ok)throw Error('Unavailable');const info=await res.json();if(!info.ready||!info.token)throw Error('Unavailable');bridge=true;token=info.token;bridgeInfo=info;account=info.user;$('#accountLabel').textContent=account.username+' · '+account.role;$('#usersNav').hidden=account.role!=='admin';}
+    catch{bridge=false;token='';bridgeInfo=null}const msg=bridge?'Umbrel backend connected':'Umbrel backend offline';$('#bridgeDot').className='dot '+(bridge?'up':'');$('#bridgeLabel').textContent=msg;$('#settingsBridgeState').className='chip '+(bridge?'healthy':'pending');$('#settingsBridgeState').textContent=bridge?'Connected':'Offline';$('#staticBanner').hidden=bridge;return bridge}
+  async function loadUsers(){
+    if(account?.role!=='admin')return;
+    try{const {users}=await apiRequest('/api/admin/users');
+      $('#usersTable').innerHTML=users.map(u=>`<tr><td><strong>${esc(u.username)}</strong>${u.id===account.id?' (you)':''}</td>
+        <td><span class="chip">${esc(u.role)}</span></td><td>${u.disabled?'<span class="chip unhealthy">Disabled</span>':'<span class="chip healthy">Active</span>'}</td>
+        <td><div class="manage-users"><button class="btn tiny" data-action="user-role" data-id="${u.id}">Role</button><button class="btn tiny" data-action="user-password" data-id="${u.id}">Reset password</button><button class="btn tiny ${u.disabled?'':'danger'}" data-action="user-disable" data-id="${u.id}">${u.disabled?'Enable':'Disable'}</button></div></td></tr>`).join('');
+    }catch(err){toast(err.message,'error')}
+  }
+  async function userManage(uid,action){
+    if(account?.role!=='admin')return;
+    const {users}=await apiRequest('/api/admin/users');const user=users.find(x=>x.id===uid);if(!user)return;
+    let data={};
+    if(action==='disabled'){if(!confirm((user.disabled?'Enable ':'Disable ')+user.username+'?'))return;data.disabled=!user.disabled}
+    if(action==='role'){const val=prompt('Role for '+user.username+' (admin or user):',user.role);if(!val)return;if(!['admin','user'].includes(val)){toast('Role must be admin or user','error');return}data.role=val}
+    if(action==='password'){
+      const f=$('#resetPasswordForm');f.reset();f.elements.userId.value=user.id;
+      $('#resetPasswordLabel').textContent='Account: '+user.username;dialogOpen('resetPasswordDialog');return;
+    }
+    try{await apiRequest('/api/admin/users/'+uid,'PATCH',data);toast('Account updated. Previous sessions revoked.');await loadUsers()}
+    catch(err){toast(err.message,'error')}
+  }
+  async function openSharing(){
+    try{
+      const [share,directory]=await Promise.all([
+        apiRequest('/api/boards/'+encodeURIComponent(activeBoard)+'/share'),apiRequest('/api/users/directory')]);
+      shareUsers=directory.users;const f=$('#shareForm');f.elements.name.value=share.name;f.elements.teamAccess.value=share.teamAccess;
+      const selected=Object.fromEntries(share.members.map(x=>[x.userId,x.access]));
+      $('#shareMembers').innerHTML=shareUsers.filter(u=>u.id!==account.id).map(u=>`<div class="share-entry"><span>${esc(u.username)}</span><select class="control" data-share-user="${u.id}"><option value="none" ${!selected[u.id]?'selected':''}>Use team default</option><option value="view" ${selected[u.id]==='view'?'selected':''}>View</option><option value="edit" ${selected[u.id]==='edit'?'selected':''}>Edit</option></select></div>`).join('');
+      dialogOpen('shareDialog');
+    }catch(err){toast(err.message,'error')}
+  }
+  $('#boardPicker').addEventListener('change',e=>switchBoard(e.target.value).then(()=>{$('#boardPicker').value=activeBoard}));
+  $('#boardForm').addEventListener('submit',async e=>{
+    e.preventDefault();const f=e.currentTarget;
+    try{if(saveHandle)queueSave();await saveSequence;const result=await apiRequest('/api/boards','POST',{name:f.elements.name.value,teamAccess:f.elements.teamAccess.value});f.closest('dialog').close();await refreshBoards(result.id);toast('Dashboard created')}
+    catch(err){toast(err.message,'error')}
+  });
+  $('#shareForm').addEventListener('submit',async e=>{
+    e.preventDefault();const f=e.currentTarget;
+    const members=$$('[data-share-user]',f).filter(x=>x.value!=='none').map(x=>({userId:Number(x.dataset.shareUser),access:x.value}));
+    try{if(saveHandle)queueSave();await saveSequence;await apiRequest('/api/boards/'+encodeURIComponent(activeBoard)+'/share','PUT',{name:f.elements.name.value,teamAccess:f.elements.teamAccess.value,members});f.closest('dialog').close();await refreshBoards(activeBoard);toast('Sharing saved')}
+    catch(err){toast(err.message,'error')}
+  });
+  $('#resetPasswordForm').addEventListener('submit',async e=>{
+    e.preventDefault();const f=e.currentTarget,uid=Number(f.elements.userId.value);
+    try{await apiRequest('/api/admin/users/'+uid,'PATCH',{password:f.elements.password.value});f.closest('dialog').close();f.reset();toast('Password reset. User sessions revoked.');await loadUsers()}
+    catch(err){toast(err.message,'error')}
+  });
+  $('#createUserForm').addEventListener('submit',async e=>{
+    e.preventDefault();const f=e.currentTarget;
+    try{await apiRequest('/api/admin/users','POST',{username:f.elements.username.value,password:f.elements.password.value,role:f.elements.role.value});f.reset();await loadUsers();toast('Account created')}
+    catch(err){toast(err.message,'error')}
+  });
+  $('#passwordForm').addEventListener('submit',async e=>{
+    e.preventDefault();const f=e.currentTarget;
+    try{await apiRequest('/api/me/password','POST',{current:f.elements.current.value,new:f.elements.next.value});alert('Password changed. Sign in again.');location.href='/login'}
+    catch(err){toast(err.message,'error')}
+  });
+  function parseQuick(raw){
+    const entered=String(raw||'').trim();if(!entered||entered.length>360)return null;
+    let hostpart=entered,username='';
+    const at=entered.lastIndexOf('@');
+    if(at!==-1){username=entered.slice(0,at);hostpart=entered.slice(at+1);
+      if(!/^[A-Za-z0-9._-]{1,64}$/.test(username)||hostpart.includes('@'))return null;}
+    let host='',port=22;
+    if(hostpart.startsWith('[')){
+      const match=hostpart.match(/^\[([^\]]+)\](?::(\d{1,5}))?$/);
+      if(!match)return null;host=match[1];if(match[2])port=Number(match[2]);
+    }else if((hostpart.match(/:/g)||[]).length===1){
+      const atport=hostpart.lastIndexOf(':');host=hostpart.slice(0,atport);
+      if(!/^\d{1,5}$/.test(hostpart.slice(atport+1)))return null;
+      port=Number(hostpart.slice(atport+1));
+    }else{host=hostpart;}
+    if(!hostOK(host)||!Number.isInteger(port)||port<1||port>65535)return null;
+    return {name:host,host,username,port};
+  }
+  function sshCommand(x){const host=cleanHost(x.host);return `ssh -p ${validPort(x.port,22)}${x.username?' -l '+x.username:''} ${host}`}
+  let sshWebSocket=null, sshTerm=null, sshResize=null;
+  function closeSSH(){
+    if(sshWebSocket){sshWebSocket.close();sshWebSocket=null}
+    if(sshTerm){sshTerm.destroy();sshTerm=null}
+    if(sshResize){window.removeEventListener('resize',sshResize);sshResize=null}
+    const d=$('#sshDialog');if(d.open)d.close();
+  }
+  function openSSH(x){
+    closeSSH();
+    if(typeof Terminal==='undefined'){toast('Bundled web terminal did not load. Refresh this page.','error');return}
+    const d=$('#sshDialog');$('#sshTitle').textContent=x.name||x.host;
+    $('#sshMeta').textContent=(x.username?x.username+'@':'')+x.host+':'+validPort(x.port,22);
+    $('#sshStatus').textContent='Connecting to Umbrel SSH service…';
+    d.showModal();
+    const terminal=new Terminal({cols:100,rows:28,cursorBlink:true,scrollback:3000,
+      fontSize:14,fontFamily:'Consolas, Menlo, Liberation Mono, monospace',
+      theme:{background:'#090f18',foreground:'#d8eff2',cursor:'#62e5b6',selection:'#315b6d'}});
+    sshTerm=terminal;terminal.open($('#sshConsole'));terminal.focus();
+    const proto=location.protocol==='https:'?'wss:':'ws:';
+    const ws=new WebSocket(proto+'//'+location.host+'/ws/ssh');ws.binaryType='arraybuffer';sshWebSocket=ws;
+    const resize=()=>{if(!sshTerm||sshTerm!==terminal)return;
+      const box=$('#sshConsole'),fontPx=8.5,linePx=17;
+      const cols=Math.min(260,Math.max(40,Math.floor((box.clientWidth-30)/fontPx)));
+      const rows=Math.min(95,Math.max(10,Math.floor((box.clientHeight-25)/linePx)));
+      if(terminal.cols!==cols||terminal.rows!==rows)terminal.resize(cols,rows);
+      if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'resize',cols,rows}));
+    };
+    sshResize=resize;window.addEventListener('resize',resize);resize();
+    ws.onopen=()=>{ws.send(JSON.stringify({type:'connect',csrf:token,host:cleanHost(x.host),port:validPort(x.port,22),username:x.username||''}));resize()};
+    const utf8decoder=new TextDecoder('utf-8');
+    ws.onmessage=ev=>{if(ev.data instanceof ArrayBuffer){terminal.write(utf8decoder.decode(new Uint8Array(ev.data),{stream:true}));return}
+      try{const m=JSON.parse(ev.data);if(m.type==='connected'){$('#sshStatus').textContent=m.message}
+        if(m.type==='error'){terminal.writeln('\r\n[NETOPS ERROR] '+m.message);$('#sshStatus').textContent=m.message}if(m.type==='exit'){$('#sshStatus').textContent=m.message}}
+      catch{terminal.write(ev.data)}};
+    ws.onerror=()=>{$('#sshStatus').textContent='Terminal WebSocket failed — check reverse proxy WebSocket support';terminal.writeln('\r\n[WebSocket connection error]')};
+    ws.onclose=e=>{if(sshTerm===terminal){$('#sshStatus').textContent='Session closed ('+e.code+')';terminal.writeln('\r\n[Session closed — close this window to return]')}};
+    // Bundled xterm.js 3.x uses EventEmitter .on(), not the v4/v5 onData API.
+    terminal.on('data',data=>{if(ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({type:'input',data}))});
+    terminal.on('resize',resize);
+    logActivity('Browser SSH: '+(x.name||x.host));
+  }
+  async function sshLaunch(x){
+    if(!hostOK(x.host)){toast('Enter a valid hostname or IP address first.','error');return}
+    if(x.username&&!/^[a-zA-Z0-9._-]{1,64}$/.test(x.username)){toast('Unsupported SSH username characters','error');return}
+    if(bridge){openSSH(x);return}
+    await copy(sshCommand(x));toast('Backend unavailable; SSH command copied','error');
+  }
+  async function rdpLaunch(x){
+    if(!hostOK(x.host)){toast('Enter a valid hostname / IP first.','error');return}
+    const target=cleanHost(x.host),safeName=(x.name||target).replace(/[^a-zA-Z0-9._-]/g,'_');
+    const content='full address:s:'+target+'\r\n'+'prompt for credentials on client:i:1\r\n'+'authentication level:i:2\r\n'+'screen mode id:i:2\r\n';
+    const url=URL.createObjectURL(new Blob([content],{type:'application/x-rdp'}));
+    const link=document.createElement('a');link.href=url;link.download=safeName+'.rdp';document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    toast('RDP file downloaded — open it with Remote Desktop on your computer');logActivity('Downloaded RDP: '+(x.name||x.host));
+  }
+  async function checkAll(){if(checking)return;const list=state.assets.filter(x=>hostOK(x.host)).map(x=>({id:x.id,host:cleanHost(x.host),port:x.checkPort||((x.mode==='rdp')?3389:x.port)}));if(!list.length){toast('Add hostnames to devices before checking ports.','error');return}if(!bridge){toast('Umbrel backend must be online for TCP checks.','error');return}checking=true;renderHome();toast('Checking device TCP ports…');try{const r=await api('check',{targets:list.slice(0,40)});statuses={...statuses,...Object.fromEntries(r.results.map(x=>[x.id,x]))};logActivity(`Checked ${r.results.length} device TCP ports`);if(list.length>40)toast('Checked first 40 devices (limit per run).')}catch(err){toast(err.message,'error')}checking=false;renderHome();renderAssets()}
+  async function runDiagnostic(task){const host=cleanHost($('#diagHost').value);if(!hostOK(host)){toast('Enter a valid hostname or IP.','error');return}if(!bridge){$('#diagOutput').textContent='Umbrel backend is offline. Diagnostic tools run from the Umbrel container when connected.';return}$('#diagOutput').textContent='Running '+task+' against '+host+'…';try{const r=await api('diagnostic',{host,task});$('#diagOutput').textContent=r.output||'No output returned';logActivity(`${task.toUpperCase()}: ${host}`)}catch(err){$('#diagOutput').textContent=err.message;toast(err.message,'error')}}
+  const ipToInt=s=>{const parts=s.split('.');if(parts.length!==4||parts.some(x=>!/^(0|[1-9]\d{0,2})$/.test(x)||Number(x)>255))return null;return parts.reduce((a,p)=>(a*256+Number(p))>>>0,0)};
+  const intToIP=n=>[24,16,8,0].map(b=>(n>>>b)&255).join('.');
+  function calculateSubnet(){const v=$('#cidrInput').value.trim();const m=v.match(/^([^/]+)\/(\d{1,2})$/);if(!m||Number(m[2])>32){$('#cidrResult').innerHTML='<p class="red">Enter an IPv4 address such as 192.168.10.35/27.</p>';return}const ip=ipToInt(m[1]);if(ip===null){$('#cidrResult').innerHTML='<p class="red">Invalid IPv4 address.</p>';return}const prefix=Number(m[2]),mask=prefix===0?0:(0xffffffff<<(32-prefix))>>>0,net=(ip&mask)>>>0,broadcast=(net|(~mask>>>0))>>>0,total=2**(32-prefix),usable=prefix<=30?Math.max(0,total-2):prefix===31?2:1,first=prefix<=30?net+1:net,last=prefix<=30?broadcast-1:broadcast;const rows=[['Network',`${intToIP(net)}/${prefix}`],['Subnet mask',intToIP(mask)],['Broadcast',intToIP(broadcast)],['Wildcard mask',intToIP((~mask)>>>0)],['Usable addresses',usable.toLocaleString()],['Usable host range',`${intToIP(first)} – ${intToIP(last)}`]];$('#cidrResult').innerHTML=rows.map(([k,x])=>`<div class="result-cell"><small>${esc(k)}</small><b>${esc(x)}</b></div>`).join('')}
+  function parseIPv6(input){
+    if(!/^[0-9a-fA-F:]+$/.test(input)||input.includes(':::'))return null;
+    const chunks=input.split('::');if(chunks.length>2)return null;
+    const parsePart=x=>x?x.split(':'):[];
+    const left=parsePart(chunks[0]),right=chunks.length===2?parsePart(chunks[1]):[];
+    const parts=left.concat(right);
+    if(parts.some(x=>!/^[0-9a-fA-F]{1,4}$/.test(x)))return null;
+    if(chunks.length===1&&parts.length!==8)return null;
+    if(chunks.length===2&&parts.length>=8)return null;
+    const all=chunks.length===2?[...left,...Array(8-parts.length).fill('0'),...right]:parts;
+    if(all.length!==8)return null;
+    return all.reduce((n,x)=>(n<<16n)|BigInt(parseInt(x,16)),0n);
+  }
+  function ipv6ToText(value){
+    const groups=Array.from({length:8},(_,i)=>Number((value>>BigInt((7-i)*16))&65535n).toString(16));
+    let start=-1,len=0;
+    for(let i=0;i<8;){if(groups[i]!=='0'){i++;continue}let j=i;while(j<8&&groups[j]==='0')j++;if(j-i>len&&j-i>=2){start=i;len=j-i}i=j}
+    if(start===-1)return groups.join(':');
+    const before=groups.slice(0,start).join(':'),after=groups.slice(start+len).join(':');
+    return `${before}::${after}`;
+  }
+  function calculateIPv6(){
+    const raw=$('#ipv6Input').value.trim(),match=raw.match(/^([^/]+)\/(\d{1,3})$/);
+    if(!match||Number(match[2])>128){$('#ipv6Result').innerHTML='<p class="red">Enter an IPv6 prefix such as 2001:db8::1/64.</p>';return}
+    const addr=parseIPv6(match[1]);if(addr===null){$('#ipv6Result').innerHTML='<p class="red">Invalid IPv6 address. Use hexadecimal notation.</p>';return}
+    const bits=Number(match[2]),shift=128n-BigInt(bits),mask=((1n<<128n)-1n)^((1n<<shift)-1n),network=addr&mask,last=network|((1n<<shift)-1n);
+    const cells=[['Network',ipv6ToText(network)+'/'+bits],['First address',ipv6ToText(network)],['Last address',ipv6ToText(last)],['Addresses in prefix',(1n<<shift).toLocaleString('en-US')]];
+    $('#ipv6Result').innerHTML=cells.map(([k,v])=>`<div class="result-cell"><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('');
+  }
+  function refreshTime(){const d=new Date();$('#clock').textContent=d.toLocaleDateString([],{month:'short',day:'numeric'})+'  '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:false})}
+  function exportJSON(){const blob=new Blob([JSON.stringify({app:'netops-command-center',version:1,exportedAt:new Date().toISOString(),...state},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='netops-dashboard-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Backup downloaded')}
+  function getAsset(id){return state.assets.find(x=>x.id===id)}function getLink(id){return state.links.find(x=>x.id===id)}
+  document.addEventListener('click',async e=>{const nav=e.target.closest('[data-nav]');if(nav){setView(nav.dataset.nav);return}const b=e.target.closest('[data-action]');if(!b)return;const act=b.dataset.action,id=b.dataset.id,a=getAsset(id),l=getLink(id);
+    const mutations=new Set(['new-asset','edit-asset','delete-asset','toggle-favorite','new-link','edit-link','delete-link','new-snippet','edit-snippet','delete-snippet','add-task','delete-task','reset-checklist','clear-activity','import','reset-all']);
+    if(mutations.has(act)&&!canEdit){toast('This board is read-only','error');return}
+    switch(act){
+      case 'new-board':$('#boardForm').reset();dialogOpen('boardDialog');break;
+      case 'share-board':await openSharing();break;
+      case 'refresh-users':await loadUsers();break;
+      case 'user-disable':await userManage(Number(id),'disabled');break;
+      case 'user-role':await userManage(Number(id),'role');break;
+      case 'user-password':await userManage(Number(id),'password');break;
+      case 'new-asset':addAsset();break;case 'edit-asset':if(a)addAsset(a);break;
+      case 'delete-asset':if(a&&confirm('Delete '+a.name+'?')){state.assets=state.assets.filter(x=>x.id!==id);delete statuses[id];save();render();toast('Device deleted')}break;
+      case 'toggle-favorite':if(a){a.favorite=!a.favorite;save();render()}break;
+      case 'web-asset':if(a&&safeUrl(a.url)){window.open(safeUrl(a.url),'_blank','noopener,noreferrer');logActivity('Opened '+a.name+' web interface')}break;
+      case 'ssh':if(a)await sshLaunch(a);break;case 'rdp':if(a)await rdpLaunch(a);break;
+      case 'quick-ssh':{const x=parseQuick($('#quickSSH').value);if(!x){toast('Use user@hostname:port or hostname. For IPv6 use [address].','error');break}await sshLaunch(x);break}
+      case 'check-all':await checkAll();break;
+      case 'new-link':addLink();break;case 'edit-link':if(l)addLink(l);break;
+      case 'delete-link':if(l&&confirm('Delete bookmark '+l.name+'?')){state.links=state.links.filter(x=>x.id!==id);save();render();toast('Bookmark deleted')}break;
+      case 'open-link':if(l)logActivity('Opened bookmark: '+l.name);break;
+      case 'open-link-button':if(l){window.open(l.url,'_blank','noopener,noreferrer');logActivity('Opened bookmark: '+l.name)}break;
+      case 'new-snippet':addSnippet();break;case 'edit-snippet':{const s=state.snippets.find(x=>x.id===id);if(s)addSnippet(s);break}
+      case 'delete-snippet':{const s=state.snippets.find(x=>x.id===id);if(s&&confirm('Delete snippet '+s.name+'?')){state.snippets=state.snippets.filter(x=>x.id!==id);save();renderSnippets()}break}
+      case 'copy-snippet':{const s=state.snippets.find(x=>x.id===id);if(s){await copy(s.command);logActivity('Copied snippet: '+s.name)}break}
+      case 'add-task':{const t=$('#newTask').value.trim().slice(0,140);if(t){state.tasks.push({id:uid(),text:t,done:false});$('#newTask').value='';save();renderHome()}break}
+      case 'delete-task':state.tasks=state.tasks.filter(x=>x.id!==id);save();renderHome();break;
+      case 'reset-checklist':state.tasks.forEach(x=>x.done=false);save();renderHome();toast('Checklist reset');break;
+      case 'clear-activity':state.activity=[];save();renderActivity();break;
+      case 'calc-subnet':calculateSubnet();break;case 'calc-ipv6':calculateIPv6();break;
+      case 'diagnostic':await runDiagnostic(b.dataset.task);break;
+      case 'close-dialog':b.closest('dialog')?.close();break;
+      case 'export':exportJSON();break;case 'import':$('#importFile').click();break;
+      case 'reset-all':if(confirm('Permanently reset this dashboard for every user who has access?')){state=defaults();statuses={};save();render();toast('Defaults restored')}break;
+      case 'check-bridge':await detectBridge();toast(bridge?'Umbrel service connected':'Umbrel service offline',bridge?'ok':'error');break;
+      case 'logout':try{await api('logout',{})}catch{}location.href='/login';break;
+    }
+  });
+  document.addEventListener('change',e=>{const id=e.target.dataset.taskId;if(!canEdit)return;if(id){const t=state.tasks.find(x=>x.id===id);if(t){t.done=e.target.checked;save();renderHome()}}});
+  $('#assetForm').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,g=k=>f.elements[k].value.trim(),host=cleanHost(g('host')),url=g('url'),uname=g('username');if(host&&!hostOK(host)){toast('Invalid hostname or IP address.','error');return}if(url&&!safeUrl(url)){toast('Management URL must start with http:// or https://','error');return}if(uname&&!/^[a-zA-Z0-9._-]{1,64}$/.test(uname)){toast('SSH username may contain letters, digits, . _ and - only.','error');return}const id=g('id')||uid(),item={id,name:g('name').slice(0,80),host,category:g('category').slice(0,40),mode:g('mode'),port:validPort(g('port'),22),checkPort:g('checkPort')?validPort(g('checkPort'),22):0,username:uname,url:safeUrl(url),notes:g('notes').slice(0,2000),favorite:f.elements.favorite.checked};const idx=state.assets.findIndex(x=>x.id===id);if(idx===-1)state.assets.push(item);else state.assets[idx]=item;delete statuses[id];save();$('#assetDialog').close();render();toast('Device saved')});
+  $('#linkForm').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,g=k=>f.elements[k].value.trim(),url=safeUrl(g('url'));if(!url){toast('Enter a valid http(s) URL.','error');return}const id=g('id')||uid(),item={id,name:g('name').slice(0,80),url,category:g('category').slice(0,40),symbol:g('symbol').slice(0,2)||'↗',favorite:f.elements.favorite.checked};const i=state.links.findIndex(x=>x.id===id);if(i<0)state.links.push(item);else state.links[i]=item;save();$('#linkDialog').close();render();toast('Bookmark saved')});
+  $('#snippetForm').addEventListener('submit',e=>{e.preventDefault();const f=e.currentTarget,g=k=>f.elements[k].value.trim(),id=g('id')||uid(),item={id,name:g('name').slice(0,80),category:g('category').slice(0,60),command:g('command').slice(0,3000)};const i=state.snippets.findIndex(x=>x.id===id);if(i<0)state.snippets.push(item);else state.snippets[i]=item;save();$('#snippetDialog').close();renderSnippets();toast('Snippet saved')});
+  $('#assetFilter').addEventListener('input',renderAssets);$('#categoryFilter').addEventListener('change',renderAssets);
+  $('#workspaceNotes').addEventListener('input',e=>{if(!canEdit)return;state.notes=e.target.value.slice(0,100000);save()});
+  $('#globalSearch').addEventListener('input',e=>{if(e.target.value.trim()){setView('assets');$('#assetFilter').value=e.target.value;renderAssets()}else if(view==='assets'){$('#assetFilter').value='';renderAssets()}});
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('#globalSearch').focus();$('#globalSearch').select()}if(e.key==='Escape'&&document.activeElement===$('#globalSearch'))$('#globalSearch').blur();if(e.key==='Enter'&&document.activeElement===$('#quickSSH'))$('#quickSSH').nextElementSibling.click();if(e.key==='Enter'&&document.activeElement===$('#cidrInput'))calculateSubnet();if(e.key==='Enter'&&document.activeElement===$('#ipv6Input'))calculateIPv6();if(e.key==='Enter'&&document.activeElement===$('#newTask'))$('[data-action="add-task"]').click()});
+  $('#importFile').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(file.size>1500000){toast('Backup is too large (1.5MB limit).','error');e.target.value='';return}try{const data=JSON.parse(await file.text()),parsed=validateData(data);if(!parsed)throw Error('Not a valid NETOPS backup');if(canEdit&&confirm('Replace data on the selected dashboard with this backup?')){state=parsed;statuses={};save();render();toast('Backup imported successfully')}}catch(err){toast(err.message||'Invalid backup file','error')}e.target.value=''});
+  $('#sshClose').addEventListener('click',closeSSH);
+  $('#sshDialog').addEventListener('close',closeSSH);
+  refreshTime();setInterval(refreshTime,1000);render();calculateSubnet();calculateIPv6();
+  detectBridge().then(()=>{if(bridge)refreshBoards().catch(err=>toast(err.message,'error'))});
+})();
+</script>
+</body>
+</html>
