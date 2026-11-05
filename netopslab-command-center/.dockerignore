@@ -1,0 +1,9 @@
+.git
+*.sqlite3
+*.db
+.env
+__pycache__
+*.pyc
+backups/
+README.md
+*.zip
