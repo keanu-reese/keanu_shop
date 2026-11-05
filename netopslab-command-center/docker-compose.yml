@@ -1,0 +1,60 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: netopslab-command-center_server_1
+      APP_PORT: 8765
+      # NETOPS has its own account authentication. Umbrel's app gateway
+      # may also require a home-screen login depending on user sharing.
+      PROXY_AUTH_ADD: "false"
+
+  # One-time permissions helper. No Docker socket or host privileged mounts.
+  init_permissions:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: "0:0"
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - "mkdir -p /data /data/ssh-admin && chown -R 10001:10001 /data && chmod 700 /data/ssh-admin"
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+    restart: "no"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+    security_opt:
+      - no-new-privileges:true
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: "10001:10001"
+    depends_on:
+      init_permissions:
+        condition: service_completed_successfully
+    init: true
+    restart: on-failure
+    environment:
+      NETOPS_LISTEN: 0.0.0.0
+      NETOPS_PORT: "8765"
+      NETOPS_DATA_FILE: /data/dashboard.json
+      NETOPS_DB_FILE: /data/netops.sqlite3
+      NETOPS_PASSWORD: ${APP_PASSWORD}
+      NETOPS_SECURE_COOKIE: "false"
+    volumes:
+      - ${APP_DATA_DIR}/data:/data
+      - ${APP_DATA_DIR}/data/ssh-admin:/home/netops/.ssh
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=24m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 100
+    mem_limit: 768m
