@@ -2,7 +2,7 @@ manifestVersion: 1
 id: netopslab-command-center
 name: NETOPS Command Center
 category: networking
-version: 3.1.1
+version: 3.1.2
 tagline: Self-hosted SSH and network operations workspace
 icon: https://raw.githubusercontent.com/keanu-reese/keanu_shop/main/netopslab-command-center/icon.svg
 port: 8765
@@ -16,8 +16,7 @@ submitter: keanureese
 repo: https://github.com/keanu-reese/keanu_shop
 support: https://github.com/keanu-reese/keanu_shop/issues
 gallery: []
-releaseNotes: Corrects the Umbrel installation process to use a published multi-architecture
-  container image instead of attempting to compile the application during installation.
+releaseNotes: Fixes startup permission errors on Umbrel by allowing the one-time init helper to adjust permissions of its SSH directory. No application data is deleted.
 dependencies: []
 path: ''
 defaultUsername: admin
