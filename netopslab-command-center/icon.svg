@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="NETOPS Command Center">
+  <defs><linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#102737"/><stop offset="1" stop-color="#07141e"/></linearGradient></defs>
+  <rect width="256" height="256" rx="55" fill="url(#bg)"/>
+  <g fill="none" stroke="#55dfbb" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="45" y="64" width="166" height="118" rx="14"/>
+    <path d="m70 102 27 20-27 20M110 144h30"/>
+    <path d="M83 182v15m90-15v15M65 198h125"/>
+  </g>
+  <circle cx="177" cy="99" r="8" fill="#62f6c4"/>
+</svg>
