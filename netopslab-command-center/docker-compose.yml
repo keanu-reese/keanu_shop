@@ -15,7 +15,7 @@ services:
     user: "0:0"
     entrypoint: ["/bin/sh", "-ec"]
     command:
-      - "mkdir -p /data /data/ssh-admin && chown -R 10001:10001 /data && chmod 700 /data/ssh-admin"
+      - "mkdir -p /data /data/ssh-admin && chmod 700 /data/ssh-admin && chown -R 10001:10001 /data"
     volumes:
       - ${APP_DATA_DIR}/data:/data
     restart: "no"
@@ -24,6 +24,7 @@ services:
     cap_add:
       - CHOWN
       - DAC_OVERRIDE
+      - FOWNER
     security_opt:
       - no-new-privileges:true
 
