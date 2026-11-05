@@ -11,9 +11,7 @@ services:
 
   # One-time permissions helper. No Docker socket or host privileged mounts.
   init_permissions:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/keanu-reese/keanu_shop:3.1.1
     user: "0:0"
     entrypoint: ["/bin/sh", "-ec"]
     command:
@@ -30,9 +28,7 @@ services:
       - no-new-privileges:true
 
   server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/keanu-reese/keanu_shop:3.1.1
     user: "10001:10001"
     depends_on:
       init_permissions:
