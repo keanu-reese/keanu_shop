@@ -99,29 +99,14 @@ def security_headers(response: web.StreamResponse) -> web.StreamResponse:
     return response
 
 
-def validate_origin(request: web.Request) -> bool:
-    """Validate same-origin browser requests, including requests via Umbrel's proxy.
+def browser_cross_site(request: web.Request) -> bool:
+    """Conservative Fetch Metadata rejection independent of reverse-proxy Host.
 
-    Umbrel may rewrite Host before forwarding, while browser Fetch Metadata
-    still correctly identifies same-origin navigation, fetch and WebSocket.
-    Authenticated API mutations and SSH also require a session CSRF token.
+    When the header is missing, login requires a SameSite=Strict login token
+    bound to the browser cookie; authenticated writes require a session CSRF
+    header; WebSocket SSH requires a session CSRF value in its first message.
     """
-    site = request.headers.get('Sec-Fetch-Site', '').lower()
-    if site in ('cross-site', 'same-site', 'none'):
-        return False
-    origin = request.headers.get('Origin')
-    if not origin:
-        return True
-    try:
-        u = urlsplit(origin)
-        if u.scheme not in ('http', 'https') or not u.hostname or u.username or u.password or u.path or u.query or u.fragment:
-            return False
-        if site == 'same-origin':
-            return True
-        hosts = (request.host, request.headers.get('X-Forwarded-Host', ''))
-        return u.netloc.lower() in (h.lower() for h in hosts if h)
-    except ValueError:
-        return False
+    return request.headers.get('Sec-Fetch-Site', '').lower() == 'cross-site'
 
 
 @web.middleware
@@ -143,19 +128,24 @@ async def guard(request: web.Request, handler):
     request['session'] = user_session
     request['user'] = current_user
     if request.method in ('POST', 'PUT', 'PATCH', 'DELETE'):
-        if not validate_origin(request):
+        if browser_cross_site(request):
             return security_headers(json_error('Forbidden origin', 403))
         if request.headers.get('X-NETOPS-Token') != user_session['csrf']:
             return security_headers(json_error('Invalid session token', 403))
-    if request.path.startswith('/ws/') and not validate_origin(request):
+    if request.path.startswith('/ws/') and browser_cross_site(request):
         return security_headers(json_error('Forbidden WebSocket origin', 403))
     return security_headers(await handler(request))
 
 
 async def login_get(request: web.Request):
     error = 'Invalid username or password.' if request.query.get('error') else ''
-    return web.Response(text=f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NETOPS · Sign in</title><style>
-    *{{box-sizing:border-box}}body{{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(ellipse at 75% 0,#172e43,#090f18 62%);color:#eaf6ff;font:15px system-ui,sans-serif}}main{{width:min(410px,92vw);background:#101c2a;border:1px solid #2e4356;border-radius:16px;padding:35px;box-shadow:0 20px 80px #0008}}.logo{{color:#65e5b4;font-size:13px;letter-spacing:.2em;font-weight:800}}h1{{font-size:26px;margin:16px 0 9px}}p{{color:#92aabf;line-height:1.6}}input{{display:block;width:100%;border:1px solid #36516a;background:#0b1622;color:white;padding:13px;border-radius:8px;margin:8px 0 18px}}button{{width:100%;border:0;border-radius:8px;background:#65e5b4;color:#0a291d;font-weight:800;padding:13px;cursor:pointer}}small{{display:block;color:#7290a8;margin-top:18px}}label{{font-size:12px;color:#b9cfe0}}.error{{color:#ffc6cb}}</style></head><body><main><div class="logo">⌘ &nbsp; NETOPS / COMMAND CENTER</div><h1>Welcome back.</h1><p>Sign in to your Umbrel-hosted network workspace.</p><p class="error">{html.escape(error)}</p><form method="post" action="/login"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required maxlength="32" value="admin" autofocus><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">Open Command Center</button></form><small>Local accounts · No external identity provider</small></main></body></html>''', content_type='text/html')
+    login_token = secrets.token_urlsafe(32)
+    response = web.Response(text=f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>NETOPS · Sign in</title><style>
+    *{{box-sizing:border-box}}body{{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(ellipse at 75% 0,#172e43,#090f18 62%);color:#eaf6ff;font:15px system-ui,sans-serif}}main{{width:min(410px,92vw);background:#101c2a;border:1px solid #2e4356;border-radius:16px;padding:35px;box-shadow:0 20px 80px #0008}}.logo{{color:#65e5b4;font-size:13px;letter-spacing:.2em;font-weight:800}}h1{{font-size:26px;margin:16px 0 9px}}p{{color:#92aabf;line-height:1.6}}input{{display:block;width:100%;border:1px solid #36516a;background:#0b1622;color:white;padding:13px;border-radius:8px;margin:8px 0 18px}}button{{width:100%;border:0;border-radius:8px;background:#65e5b4;color:#0a291d;font-weight:800;padding:13px;cursor:pointer}}small{{display:block;color:#7290a8;margin-top:18px}}label{{font-size:12px;color:#b9cfe0}}.error{{color:#ffc6cb}}</style></head><body><main><div class="logo">⌘ &nbsp; NETOPS / COMMAND CENTER</div><h1>Welcome back.</h1><p>Sign in to your Umbrel-hosted network workspace.</p><p class="error">{html.escape(error)}</p><form method="post" action="/login"><label for="username">Username</label><input id="username" name="username" autocomplete="username" required maxlength="32" value="admin" autofocus><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">Open Command Center</button><input type="hidden" name="login_csrf" value="{login_token}"></form><small>Local accounts · No external identity provider</small></main></body></html>''', content_type='text/html')
+    response.set_cookie('netops_login_csrf', login_token, httponly=True, samesite='Strict',
+          secure=os.getenv('NETOPS_SECURE_COOKIE', 'false').lower() == 'true',
+          max_age=3600, path='/login')
+    return response
 
 
 async def login_post(request: web.Request):
@@ -166,7 +156,7 @@ async def login_post(request: web.Request):
     if len(ATTEMPTS[peer]) >= 8:
         await asyncio.sleep(0.5)
         return json_error('Too many attempts; try again shortly', 429)
-    if not validate_origin(request) or (request.content_length is not None and request.content_length > 2048):
+    if browser_cross_site(request) or (request.content_length is not None and request.content_length > 2048):
         return json_error('Invalid login request',400)
     if request.content_type != 'application/x-www-form-urlencoded':
         return json_error('Invalid login request',400)
@@ -179,6 +169,10 @@ async def login_post(request: web.Request):
         body = {key: values[0] for key, values in parse_qs(raw_body.decode('utf-8'), keep_blank_values=True).items()}
     except UnicodeDecodeError:
         return json_error('Invalid login request',400)
+    login_cookie = request.cookies.get('netops_login_csrf', '')
+    login_token = body.get('login_csrf', '')
+    if not login_cookie or not isinstance(login_token, str) or not hmac.compare_digest(login_cookie, login_token):
+        return json_error('Invalid login request', 400)
     username = str(body.get('username',''))[:32]
     password = str(body.get('password',''))[:256]
     account = store.authenticate(username, password)
@@ -191,6 +185,7 @@ async def login_post(request: web.Request):
     SESSIONS[sid] = {'user_id':account['id'], 'expires':time.monotonic()+SESSION_SECONDS,
                      'csrf':secrets.token_urlsafe(32)}
     result = web.HTTPFound('/')
+    result.del_cookie('netops_login_csrf', path='/login')
     result.set_cookie('netops_session', sid, httponly=True, samesite='Strict',
           secure=os.getenv('NETOPS_SECURE_COOKIE','false').lower() == 'true',
           max_age=SESSION_SECONDS, path='/')

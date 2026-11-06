@@ -2,7 +2,7 @@ manifestVersion: 1
 id: netopslab-command-center
 name: NETOPS Command Center
 category: networking
-version: 3.1.3
+version: 3.1.4
 tagline: Self-hosted SSH and network operations workspace
 icon: https://raw.githubusercontent.com/keanu-reese/keanu_shop/main/netopslab-command-center/icon.svg
 port: 8765
@@ -16,7 +16,7 @@ submitter: keanureese
 repo: https://github.com/keanu-reese/keanu_shop
 support: https://github.com/keanu-reese/keanu_shop/issues
 gallery: []
-releaseNotes: Fixes invalid login requests behind Umbrel reverse proxy, with strict Fetch Metadata handling and bounded login forms. Preserves users, dashboards and SSH configuration.
+releaseNotes: Fixes login behind Umbrel reverse proxies using browser-bound CSRF validation while preserving stored users and dashboards.
 dependencies: []
 path: ''
 defaultUsername: admin
