@@ -100,13 +100,26 @@ def security_headers(response: web.StreamResponse) -> web.StreamResponse:
 
 
 def validate_origin(request: web.Request) -> bool:
+    """Validate same-origin browser requests, including requests via Umbrel's proxy.
+
+    Umbrel may rewrite Host before forwarding, while browser Fetch Metadata
+    still correctly identifies same-origin navigation, fetch and WebSocket.
+    Authenticated API mutations and SSH also require a session CSRF token.
+    """
+    site = request.headers.get('Sec-Fetch-Site', '').lower()
+    if site in ('cross-site', 'same-site', 'none'):
+        return False
     origin = request.headers.get('Origin')
     if not origin:
-        # SameSite cookie and unpredictable X-NETOPS-Token still required for API mutations.
         return True
     try:
         u = urlsplit(origin)
-        return u.scheme in ('http', 'https') and u.netloc.lower() == request.host.lower() and not u.username
+        if u.scheme not in ('http', 'https') or not u.hostname or u.username or u.password or u.path or u.query or u.fragment:
+            return False
+        if site == 'same-origin':
+            return True
+        hosts = (request.host, request.headers.get('X-Forwarded-Host', ''))
+        return u.netloc.lower() in (h.lower() for h in hosts if h)
     except ValueError:
         return False
 
@@ -153,9 +166,19 @@ async def login_post(request: web.Request):
     if len(ATTEMPTS[peer]) >= 8:
         await asyncio.sleep(0.5)
         return json_error('Too many attempts; try again shortly', 429)
-    if not validate_origin(request) or request.content_length is None or request.content_length > 2048:
+    if not validate_origin(request) or (request.content_length is not None and request.content_length > 2048):
         return json_error('Invalid login request',400)
-    body = await request.post()
+    if request.content_type != 'application/x-www-form-urlencoded':
+        return json_error('Invalid login request',400)
+    # An Umbrel proxy may use chunked encoding, omitting Content-Length.
+    raw_body = await request.content.read(2049)
+    if len(raw_body) > 2048:
+        return json_error('Invalid login request',400)
+    from urllib.parse import parse_qs
+    try:
+        body = {key: values[0] for key, values in parse_qs(raw_body.decode('utf-8'), keep_blank_values=True).items()}
+    except UnicodeDecodeError:
+        return json_error('Invalid login request',400)
     username = str(body.get('username',''))[:32]
     password = str(body.get('password',''))[:256]
     account = store.authenticate(username, password)

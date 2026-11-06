@@ -35,7 +35,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/keanu-reese/keanu_shop:3.1.1
+            ghcr.io/keanu-reese/keanu_shop:3.1.3
             ghcr.io/keanu-reese/keanu_shop:latest
           labels: |
             org.opencontainers.image.source=https://github.com/keanu-reese/keanu_shop
